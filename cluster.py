@@ -34,10 +34,19 @@ def main(args):
         distance_threshold=args.threshold,
         affinity='precomputed'
     )
-    clusters = clustering.fit_predict(np.asarray(distance_matrix))
 
+    cluster_ids = clustering.fit_predict(np.asarray(distance_matrix))
+
+    clusters = {}
     for i in range(len(labels)):
-        print(','.join([labels[i], str(clusters[i])]))
+        if cluster_ids[i] in clusters:
+            clusters[cluster_ids[i]].append(labels[i])
+        else:
+            clusters[cluster_ids[i]] = [labels[i]]
+
+    for cluster_id in sorted(clusters):
+        for sample_id in sorted(clusters[cluster_id]):
+            print(','.join([sample_id, str(cluster_id)]))
 
 
 if __name__ == '__main__':

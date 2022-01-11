@@ -2,6 +2,7 @@
 
 import argparse
 
+from signal import signal, SIGPIPE, SIG_DFL 
 
 def line_to_sample(line):
     line_split = line.split(args.delimiter)
@@ -36,9 +37,10 @@ def compare_against_all(sample, cgmlst_path):
     return distances
     
 
-
 def main(args):
-
+    # Prevent BrokenPipeError when output is truncated, eg. when piping to 'head'
+    signal(SIGPIPE, SIG_DFL)
+    
     all_sample_ids = []
     with open(args.cgmlst, 'r') as f:
         next(f)
@@ -46,6 +48,7 @@ def main(args):
             all_sample_ids.append(line.split(args.delimiter)[0])
 
     print(','.join([''] + all_sample_ids))
+
 
     with open(args.cgmlst, 'r') as f:
         next(f) # skip the header
@@ -56,9 +59,6 @@ def main(args):
             for s in all_sample_ids:
                 output.append(str(distances[sample[0]][s]))
             print(','.join(output))
-            
-            
-            
             
 
 if __name__ == '__main__':
