@@ -66,10 +66,10 @@ def main(args):
     
     clusters = clustering.fit(np.asarray(distance_matrix))
 
-    plt.title("Hierarchical Clustering Dendrogram")
+    plt.title(args.title)
     plt.gcf().set_size_inches(8.5, 11)
     plot_dendrogram(clusters, labels)
-    plt.savefig('dendrogram.pdf')
+    plt.savefig(args.output)
     
     
 
@@ -78,5 +78,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('distance_matrix')
     parser.add_argument('-d', '--delimiter', default=',')
+    parser.add_argument('-t', '--title', default='Hierarchical Clustering Dendrogram')
+    parser.add_argument('-o', '--output', default='dendrogram.pdf')
     args = parser.parse_args()
     main(args)
