@@ -29,7 +29,7 @@ def main(args):
     
     clustering = AgglomerativeClustering(
         n_clusters=None,
-        linkage='single',
+        linkage=args.linkage,
         compute_full_tree=True,
         distance_threshold=args.threshold,
         affinity='precomputed'
@@ -54,5 +54,6 @@ if __name__ == '__main__':
     parser.add_argument('distance_matrix')
     parser.add_argument('-d', '--delimiter', default=',')
     parser.add_argument('-t', '--threshold', type=int, default=10)
+    parser.add_argument('--linkage',default ='single')
     args = parser.parse_args()
     main(args)
