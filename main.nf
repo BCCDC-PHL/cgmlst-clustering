@@ -7,7 +7,7 @@ params.kma_folder = '/scratch/sherrie.wang/PRJEB40777/output'
 params.output="."
 params.runClustering = false
 params.threshold=50
-params.linkage_type='Single'
+params.linkage_type='single'
 
 process combine_cgmlst{
 
@@ -71,17 +71,18 @@ process cluster_py {
     when:
     params.runClustering == true
 
-    
+    publishDir params.output
+
     input:
     tuple path(distance_matrix)
 
     output:
-    path('runclustering')
+    file("${params.linkage_type}_cluster_*.csv")
 
     script:
     """
-
-    echo cluster.py  ${distance_matrix} -t ${params.threshold} --linkage ${params.linkage_type} > runclustering
+    for i in ${params.threshold}; do cluster.py  ${distance_matrix} -t \${i} --linkage ${params.linkage_type} | awk 'BEGIN {OFS=","; print "run_accession","our_clusters"} {print \$0}' > "${params.linkage_type}"_cluster_"\${i}".csv; done 
+   
     """
 }
 
