@@ -68,20 +68,21 @@ process dendrogram {
 }
 
 process cluster_py {
+    publishDir params.output, mode: 'copy'
+    
     when:
     params.runClustering == true
 
-    publishDir params.output
-
     input:
-    tuple path(distance_matrix)
+    path(distance_matrix)
 
     output:
-    file("${params.linkage_type}_cluster_*.csv")
+    path("${params.linkage_type}_cluster_*.csv")
 
     script:
     """
-    for i in ${params.threshold}; do cluster.py  ${distance_matrix} -t \${i} --linkage ${params.linkage_type} | awk 'BEGIN {OFS=","; print "run_accession","our_clusters"} {print \$0}' > "${params.linkage_type}"_cluster_"\${i}".csv; done 
+
+    for i in ${params.threshold}; do cluster.py  ${distance_matrix} -t \${i} --linkage ${params.linkage_type} | awk 'BEGIN {OFS=","; print "run_accession","our_clusters"} {print \$0}' > ${params.linkage_type}_cluster_\${i}.csv; done
    
     """
 }
