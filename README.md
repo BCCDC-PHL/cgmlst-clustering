@@ -11,7 +11,7 @@ The distance is calculated by [cgmlst-dists](https://github.com/tseemann/cgmlst-
 |----------------|:----------:|
 |kma_folder  | folder path for kma_cgmlst sample output folders |
 |threshold   | threshold for AgglomerativeClustering, can be a list of numbers in a quotation, e.g. '5 10 15' |
-|output      | output folder
+|output      | output folder |
 |runClustering| a single argument that specify if clustering should be run |
 |linkage_type | linkage type for AgglomerativeClustering, possible choice is 'single', 'average', 'complete'|
 
