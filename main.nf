@@ -2,8 +2,6 @@
 
 nextflow.enable.dsl = 2
 
-
-params.kma_folder = '/scratch/sherrie.wang/PRJEB40777/output'
 params.output="."
 params.runClustering = false
 params.threshold=50
