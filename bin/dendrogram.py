@@ -44,10 +44,11 @@ def plot_dendrogram(model, labels, **kwargs):
                 current_count += counts[child_idx - n_samples]
         counts[i] = current_count
 
+    print(counts)
     linkage_matrix = np.column_stack(
         [model.children_, model.distances_, counts]
     ).astype(float)
-
+    print(linkage_matrix)
     # Plot the corresponding dendrogram
     leaf_label_func = lambda x: labels[x]
     dendrogram(linkage_matrix, leaf_label_func=leaf_label_func, **kwargs)
@@ -58,7 +59,7 @@ def main(args):
     
     clustering = AgglomerativeClustering(
         n_clusters=None,
-        linkage='single',
+        linkage='complete',
         compute_full_tree=True,
         distance_threshold=0,
         affinity='precomputed'
