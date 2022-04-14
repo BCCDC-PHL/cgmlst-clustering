@@ -2,14 +2,10 @@
 
 nextflow.enable.dsl = 2
 
-params.output="."
-params.runClustering = false
-params.threshold=50
-params.linkage_type='single'
 
 process combine_cgmlst{
 
-    publishDir params.output
+    publishDir params.outdir
 
     input:
     path(cgmlst)
@@ -32,7 +28,7 @@ process combine_cgmlst{
 }
 
 process calculate_distance {
-    publishDir params.output
+    publishDir params.outdir
 
     input:
     path(cgmlst_tab)
@@ -49,7 +45,7 @@ process calculate_distance {
 }
 
 process dendrogram {
-    publishDir params.output
+    publishDir params.outdir
 
     input:
     path(distance_matrix)
@@ -66,7 +62,7 @@ process dendrogram {
 }
 
 process cluster_py {
-    publishDir params.output, mode: 'copy'
+    publishDir params.outdir, mode: 'copy'
     
     when:
     params.runClustering == true
