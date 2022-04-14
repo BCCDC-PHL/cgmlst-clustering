@@ -3,7 +3,6 @@
 nextflow.enable.dsl = 2
 
 
-
 process combine_cgmlst{
 
     publishDir params.outdir
