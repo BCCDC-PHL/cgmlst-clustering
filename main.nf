@@ -5,7 +5,7 @@ nextflow.enable.dsl = 2
 
 process combine_cgmlst{
 
-    publishDir params.outdir
+    publishDir params.outdir, mode: 'copy'
 
     input:
     path(cgmlst)
@@ -28,7 +28,7 @@ process combine_cgmlst{
 }
 
 process calculate_distance {
-    publishDir params.outdir
+    publishDir params.outdir, mode: 'copy'
 
     input:
     path(cgmlst_tab)
@@ -45,7 +45,7 @@ process calculate_distance {
 }
 
 process dendrogram {
-    publishDir params.outdir
+    publishDir params.outdir, mode: 'copy'
 
     input:
     path(distance_matrix)
