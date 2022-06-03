@@ -50,8 +50,9 @@ def plot_dendrogram(model, labels, **kwargs):
     ).astype(float)
     print(linkage_matrix)
     # Plot the corresponding dendrogram
-    leaf_label_func = lambda x: labels[x]
-    dendrogram(linkage_matrix, leaf_label_func=leaf_label_func, **kwargs)
+    #truncate labels if they are longer than 20 characters
+    leaf_label_func= lambda x: (labels[x][:6] + '...' + labels[x][-6:]) if len(labels[x]) > 20 else labels[x]
+    dendrogram(linkage_matrix, leaf_label_func=leaf_label_func,leaf_rotation = 90, **kwargs)
 
 
 def main(args):
@@ -70,7 +71,7 @@ def main(args):
     plt.title(args.title)
     plt.gcf().set_size_inches(8.5, 11)
     plot_dendrogram(clusters, labels)
-    plt.savefig(args.output)
+    plt.savefig(args.output,bbox_inches='tight')
     
     
 
