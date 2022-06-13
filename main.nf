@@ -2,7 +2,23 @@
 
 nextflow.enable.dsl = 2
 
+process filter_by_samplesheet{
 
+    publishDir params.outdir, mode: 'copy'
+
+    input:
+    path(cgmlsttab)
+    path(samplesheet)
+
+    output:
+    path("filtered_cgmlst.tab")
+
+    """
+    cat ${samplesheet} | cut -d',' -f1 > ids.csv
+    awk -F '\t' 'NR==FNR {id[\$1]; next} \$1 in id' ids.csv ${cgmlsttab} > filtered_cgmlst.tab
+    
+    """
+}
 process combine_cgmlst{
 
     publishDir params.outdir, mode: 'copy'
@@ -84,11 +100,21 @@ process cluster_py {
 
 workflow {
 
-
+   
     ch_cgmlst = Channel.fromPath(params.kma_folder)
-    
     combine_cgmlst(ch_cgmlst)
+
+    if(params.samplesheet_input != 'NO_FILE'){
+    //filter out combined_cgmlst.csv based on sample ids in the sample sheet
+    ch_samplesheet = Channel.fromPath(params.samplesheet_input)   
+    
+    filter_by_samplesheet(combine_cgmlst.out, ch_samplesheet)    
+    calculate_distance(filter_by_samplesheet.out)	
+    }else{
+
     calculate_distance(combine_cgmlst.out)
+    
+   }
     dendrogram(calculate_distance.out)
     cluster_py(calculate_distance.out)
 
