@@ -19,45 +19,28 @@ process filter_by_samplesheet{
     
     """
 }
-process combine_cgmlst{
 
-    publishDir params.outdir, mode: 'copy'
-
-    input:
-    path(cgmlst)
-
-    output:
-    path("combined_cgmlst.tab") 
-
-    """
-    dirs=(${cgmlst}/*/)
-    echo \$dirs
-
-    DIRNAME=\$(basename \$dirs)
-     
-    head -n 1 \$dirs\$DIRNAME"_cgmlst.csv" > cgmlst_header.csv
-    tail -qn+2 ${cgmlst}/*/*_cgmlst.csv > combined_cgmlst_data.csv
-    cat cgmlst_header.csv combined_cgmlst_data.csv > combined_cgmlst.csv
-    sed 's|,|\t|g' combined_cgmlst.csv > combined_cgmlst.tab
-    """
-
-}
 
 process calculate_distance {
     publishDir params.outdir, mode: 'copy'
 
     input:
-    path(cgmlst_tab)
+    path(cgmlst_csv)
 
     output:
     path("distance.csv")
 
     script:
-    """
-    cgmlst-dists -c ${cgmlst_tab} > distance.csv
-
-    """
-
+    if( params.mode == 'count-missing')
+        """
+        cat ${cgmlst_csv} | sed 's/,/\t/g' > cgmlst.tab
+        cgmlst-dists-count-missing-as-diff -c cgmlst.tab > distance.csv
+        """
+    else
+        """
+        cat ${cgmlst_csv} | sed 's/,/\t/g' > cgmlst.tab
+        cgmlst-dists -c cgmlst.tab > distance.csv
+        """
 }
 
 process dendrogram {
@@ -101,18 +84,17 @@ process cluster_py {
 workflow {
 
    
-    ch_cgmlst = Channel.fromPath(params.kma_folder)
-    combine_cgmlst(ch_cgmlst)
+    ch_cgmlst = Channel.fromPath(params.cgmlst)
 
     if(params.samplesheet_input != 'NO_FILE'){
     //filter out combined_cgmlst.csv based on sample ids in the sample sheet
     ch_samplesheet = Channel.fromPath(params.samplesheet_input)   
     
-    filter_by_samplesheet(combine_cgmlst.out, ch_samplesheet)    
+    filter_by_samplesheet(ch_cgmlst, ch_samplesheet)    
     calculate_distance(filter_by_samplesheet.out)	
     }else{
 
-    calculate_distance(combine_cgmlst.out)
+    calculate_distance(ch_cgmlst)
     
    }
     dendrogram(calculate_distance.out)
